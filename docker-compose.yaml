@@ -1,0 +1,53 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: initiare-backend
+    hostname: initiare_backend
+    networks:
+      - db_network
+      - redis_network
+    depends_on:
+      - db
+      - redis
+    ports:
+      - "127.0.0.1:5001:5001"
+    volumes:
+      - go_mod_cache:/go/pkg/mod
+      - go_build_cache:/root/.cache/go-build
+
+  db:
+    image: postgres:alpine
+    container_name: initiare-db
+    hostname: initiare_db
+    networks: 
+      - db_network
+    environment:
+      POSTGRES_DB: initiare
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mysecretpassword
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5432:5432"
+    restart: always
+
+  redis:
+    image: redis:alpine
+    container_name: initiare-redis
+    hostname: initiare_redis
+    networks:
+      - redis_network
+    ports:
+      - "127.0.0.1:6379:6379"
+    restart: unless-stopped
+
+volumes:
+  db_data:
+  go_build_cache:
+  go_mod_cache:
+
+networks:
+  db_network:
+  redis_network:
