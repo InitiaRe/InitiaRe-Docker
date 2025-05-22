@@ -1,4 +1,21 @@
 services:
+  caddy:
+    build:
+      context: ./caddy
+      dockerfile: Dockerfile
+    container_name: initiare-caddy
+    hostname: initiare_caddy
+    networks:
+      - backend_network
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./caddy/config/:/etc/caddy/
+    depends_on:
+      - backend
+    restart: unless-stopped
+
   backend:
     build:
       context: ./backend
@@ -8,11 +25,10 @@ services:
     networks:
       - db_network
       - redis_network
+      - backend_network
     depends_on:
       - db
       - redis
-    ports:
-      - "127.0.0.1:5001:5001"
     volumes:
       - go_mod_cache:/go/pkg/mod
       - go_build_cache:/root/.cache/go-build
@@ -21,16 +37,12 @@ services:
     image: postgres:alpine
     container_name: initiare-db
     hostname: initiare_db
+    env_file:
+      - ./env/postgres.env
     networks: 
       - db_network
-    environment:
-      POSTGRES_DB: initiare
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: mysecretpassword
     volumes:
       - db_data:/var/lib/postgresql/data
-    ports:
-      - "127.0.0.1:5432:5432"
     restart: always
 
   redis:
@@ -39,8 +51,6 @@ services:
     hostname: initiare_redis
     networks:
       - redis_network
-    ports:
-      - "127.0.0.1:6379:6379"
     restart: unless-stopped
 
 volumes:
@@ -51,3 +61,4 @@ volumes:
 networks:
   db_network:
   redis_network:
+  backend_network:

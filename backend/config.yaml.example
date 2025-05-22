@@ -1,0 +1,40 @@
+server:
+  AppVersion: 1.0.0
+  Mode: Development
+  ReadTimeout: 5
+  WriteTimeout: 5
+  SSL: false
+  CtxDefaultTimeout: 12
+  Port: 5001
+  SuperAdmin: admin_user@initiare
+
+logger:
+  Level: debug
+  Mode: pretty
+  # Format: text
+  # Output: stdout
+
+postgreSQL:
+  Host: 
+  Port: 5432
+  User: postgres
+  Password: 
+  DBName: 
+
+redis:
+  Host: 
+  Port: 6379
+  DB: 0
+  Password: 
+
+auth:
+  Secret: 
+  Expire: 3600
+  Issuer: 
+  Audience: 
+
+storage:
+  Host: 
+  Container: 
+  AccountName: 
+  AccountKey:
